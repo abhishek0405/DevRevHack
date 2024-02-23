@@ -16,6 +16,11 @@ app = FastAPI()
 client = OpenAI(api_key="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")
 tbl = db.open_table("my_table")
 
+class Review(BaseModel):
+    id: str
+    review: str
+    source: str
+
 
 def read_json(filename):
     try:
@@ -47,6 +52,15 @@ def get_cluster(prompt):
 
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
+
+   #check if review processed already
+   #get sentiment positive/neg/neutral :prompt 1
+   #get feedback/feature/issue/nothing of value prompt 2
+   #if issue or feature, get cluster for it
+   #store it in that cluster of vector DB and appropriate JSON returned to devrev in DB
+   #if positive or negative sentiment, store to both DB
+   
+
 
 
 def get_embeddings(s):
