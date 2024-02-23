@@ -13,7 +13,7 @@ db = lancedb.connect(uri)
 
 
 app = FastAPI()
-client = OpenAI(api_key=OPEN_AI_KEY)
+client = OpenAI(api_key="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")
 tbl = db.open_table("my_table")
 
 
