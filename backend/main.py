@@ -58,32 +58,6 @@ def get_cluster(prompt):
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
-def get_sentiment(prompt):
-    messages = [
-        {"role": "system", "content": "I need you to"}
-    ]
-    messages.append({"role": "user", "content": prompt})
-    completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages= messages
-    )
-
-    print(completion.choices[0].message.content)
-    return completion.choices[0].message.content
-
-def get_type(prompt):
-    messages = [
-        {"role": "system", "content": "I need you to do topic modelling for me. Given a review, you need to come up with a name of the cluster the review might belong to. Example, review: the payments gateway crashed right when I proceeded to checkout. Your cluster name could probably be 'Payments issues'. Just give the cluster name as the response."}
-    ]
-    messages.append({"role": "user", "content": prompt})
-    completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages= messages
-    )
-
-    print(completion.choices[0].message.content)
-    return completion.choices[0].message.content
-
 
 def confirm_cluster(prompt):
     messages = [

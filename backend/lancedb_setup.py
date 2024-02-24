@@ -1,15 +1,14 @@
 import lancedb
 import pyarrow as pa
-from lancedb.pydantic import LanceModel, Vector
 
 uri = "data/sample-lancedb"
 db = lancedb.connect(uri)
 schema = pa.schema(
   [
-      pa.field("vector", pa.list_(pa.float32(), 3072)),
+      pa.field("vector", pa.list_(pa.float32(), 1536)),
       pa.field("review", pa.string()),
       pa.field("id",pa.string())
   ])
-tbl = db.create_table("reviews_table", schema=schema)
+tbl = db.create_table("review_table", schema=schema)
 
 print(tbl)
