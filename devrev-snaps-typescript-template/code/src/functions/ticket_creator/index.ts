@@ -3,7 +3,18 @@ import gplay from "google-play-scraper";
 import axios from 'axios';
 import { createClient } from 'redis';
 
-let redisClient:any = null;
+// const redisClient:any  = createClient({
+//   password: 'x8rWrY7WuyyQHhPnDAEm4ZajTQvPNE9',
+//   socket: {
+//       host: 'redis-15229.c281.us-east-1-2.ec2.cloud.redislabs.com',
+//       port: 15229
+//   }
+// })
+
+// // Handle Redis errors
+// redisClient.on('error', (err:any) => {
+//   console.error('Redis Error:', err);
+// });
 
 
 
@@ -22,11 +33,11 @@ const getPlayStoreReviews = async(event:any,appId:any)=>{
   const reviews :any= res.data;
   for(const review of reviews){
     console.log(`Processsing review id ${review.id}`)
-    const reviewProcessed = await redisClient.get(review.id);
-    if(reviewProcessed!==true){
-      await redisClient.set(review.id,true);
+    // const reviewProcessed = await redisClient.get(review.id);
+    // if(reviewProcessed!==true){
+      // await redisClient.set(review.id,true);
       const date = new Date();
-      const ticketName = `Ticket created from Playstore review ${review.url}`;
+      const ticketName = `Ticket created from Playstore review ${review.id}`;
       const ticketBody = `${review.text}`;
       const response = await devrevSDK.worksCreate({
         title: ticketName,
@@ -36,13 +47,14 @@ const getPlayStoreReviews = async(event:any,appId:any)=>{
         // The ticket will be owned by the DEVU-1 team. Rename this to match the required user.
         owned_by: ['DEVU-1'],
         type: publicSDK.WorkType.Ticket,
+        // tags:[{id:"play_store_tag"}]
       });
       console.log('Ticket created from playstore');
     }
-    else{
-      console.log(`Already processed ${review.id}`)
-    }
-  }
+  //   else{
+  //     console.log(`Already processed ${review.id}`)
+  //   }
+  // }
 }
 catch(e){
   console.log(e);
@@ -77,9 +89,9 @@ const getTweets = async(event:any)=>{
     for(const result of results){
       console.log("Processing tweet id "+ result.tweet_id)
       //check if exists
-      const tweetProcessed = await redisClient.get(result.tweet_id);
-      if(tweetProcessed!==true){
-        await redisClient.set(result.tweet_id,true);
+      // const tweetProcessed = await redisClient.get(result.tweet_id);
+      // if(tweetProcessed!==true){
+        // await redisClient.set(result.tweet_id,true);
         if(result.language==="en"){
           const ticketName = `Ticket created from Tweet id ${result.tweet_id}`;
           const ticketBody = `${result.text}`;
@@ -92,14 +104,16 @@ const getTweets = async(event:any)=>{
             // The ticket will be owned by the DEVU-1 team. Rename this to match the required user.
             owned_by: ['DEVU-1'],
             type: publicSDK.WorkType.Ticket,
+            tags:[{id:"twitter_tag",value:"twitter"}]
+
           });
           console.log('Ticket created from twitter');
         }
       }
-      else{
-        console.log(`Already processed ${result.tweet_id}`)
-      }
-      }
+      // else{
+      //   console.log(`Already processed ${result.tweet_id}`)
+      // }
+      // }
     }
    catch (error) {
     console.error(error);
@@ -109,20 +123,20 @@ const getTweets = async(event:any)=>{
 
 export const run = async (events: any[]) => {
   for (const event of events) {
-    if(redisClient===null){
-       redisClient = createClient({
-        password: 'x8rWrY7WuyyQHhPnDAEm4ZajTQvPNE9',
-        socket: {
-            host: 'redis-15229.c281.us-east-1-2.ec2.cloud.redislabs.com',
-            port: 15229
-        }
-    })
+    // if(redisClient===null){
+    //    redisClient = createClient({
+    //     password: 'x8rWrY7WuyyQHhPnDAEm4ZajTQvPNE9',
+    //     socket: {
+    //         host: 'redis-15229.c281.us-east-1-2.ec2.cloud.redislabs.com',
+    //         port: 15229
+    //     }
+    // })
     const appId='com.grofers.customerapp'
-    getTweets(event)
-    getPlayStoreReviews(event,appId)
-
+    // getTweets(event)
+    await getPlayStoreReviews(event,appId)
   }
+
 }
-}
+
 
 export default run;
