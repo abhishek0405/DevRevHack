@@ -17,7 +17,7 @@ class Review(BaseModel):
     source: str
 
 app = FastAPI()
-client = OpenAI(api_key="")
+client = OpenAI(api_key="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")
 tbl = db.open_table("review_table")
 filename = 'database.json'
 
@@ -46,8 +46,13 @@ def append_to_json(data, filename):
 
 
 def get_cluster(prompt):
+   
+    # messages = [
+    #     {"role": "system", "content": "Given a customer review, you need to do topic modelling based on the review and predict its cluster name, which should be short and broad.The topic name should not exceed 2 words. Examples of cluster names include 'Payments issues', 'Delivery issues', 'UI issues', etc. Ensure that related issues, such as 'payment gateway issue' and 'slow payments', fall under the same cluster name for cohesion."}
+    # ]
+    
     messages = [
-        {"role": "system", "content": "I need you to do topic modelling for me. Given a review, you need to come up with a name of the cluster the review might belong to. Example, review: the payments gateway crashed right when I proceeded to checkout. Your cluster name could probably be 'Payments issues'. Just give the cluster name as the response."}
+        {"role": "system", "content": "I need you to do topic modelling for me. Given a review, you need to come up with a name of the cluster the review might belong to. Example, review: the payments gateway crashed right when I proceeded to checkout. Your cluster name could probably be 'Payments'. Just give the cluster name as the response. I want you to keep each topic name just 1 word so that similar issues can be clubbed together.Eg: Payments/Performance/UI/Pricing etc"}
     ]
     messages.append({"role": "user", "content": prompt})
     completion = client.chat.completions.create(
@@ -113,7 +118,7 @@ def query_results(query_embedding):
     .metric("cosine") \
     .limit(5) \
     .to_list()
-    print(results)
+    # print(results)
     return results
 
 
@@ -149,7 +154,7 @@ async def process_reviews(reviews_list: List[Review]):
     
     # get all current datapoints: read json once
     data = read_json(filename)
-
+    print("data is",data)
     for reviewOb in reviews_list:
 
         # check if review is not processed already
@@ -172,11 +177,12 @@ async def process_reviews(reviews_list: List[Review]):
 
                 # get top 5 closest neighbours of the review from the db
                     closest_vectors = query_results(embedding)
-
+                    # print("closest vectors",closest_vectors)
 
 
                 # if closest review is greater than 0.5, skip the next steps, directly go to new cluster step
                     if len(closest_vectors) != 0:
+                        print(closest_vectors[0]['_distance'])
                         if closest_vectors[0]['_distance']  <= 0.5:
                             ids = []
                             for i in range(len(closest_vectors)):
@@ -191,27 +197,28 @@ async def process_reviews(reviews_list: List[Review]):
                             confirmation = confirm_cluster(reviewOb.review + '. Can this review be in the cluster: ' + max_cluster + ' ?')
 
                             if confirmation == 'Yes':
-                                dataOb.cluster = max_cluster
+                                dataOb['cluster'] = max_cluster
                             else:
                                 new_cluster_name = get_cluster(reviewOb.review)
-                                dataOb.cluster = new_cluster_name
+                                dataOb['cluster'] = new_cluster_name
                         else:
                             new_cluster_name = get_cluster(reviewOb.review)
-                            dataOb.cluster = new_cluster_name
+                            dataOb['cluster'] = new_cluster_name
                     else:
                         # if the closest review is also pre far, just get the cluster name for it
                         new_cluster_name = get_cluster(reviewOb.review)
-                        dataOb.cluster = new_cluster_name
+                        dataOb['cluster'] = new_cluster_name
 
             # make an object with the id, review, sentiment, type, cluster name and append to the json data list
-            dataOb.id = reviewOb.id
-            dataOb.review = reviewOb.review
-            dataOb.sentiment = sentiment
-            dataOb.review_type = review_type
-            dataOb.source = reviewOb.source
+            dataOb['id'] = reviewOb.id
+            dataOb['review'] = reviewOb.review
+            dataOb['sentiment'] = sentiment
+            dataOb['review_type'] = review_type
+            dataOb['source'] = reviewOb.source
 
             data.append(dataOb)
-            add_new_vector(embedding, reviewOb.review, reviewOb.id)
+            if review_type !='None':
+                add_new_vector(embedding, reviewOb.review, reviewOb.id)
 
     # append the json data list to the file
     append_to_json(data, filename)
