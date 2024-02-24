@@ -28,33 +28,60 @@ const getPlayStoreReviews = async(event:any,appId:any)=>{
   const res:any = await gplay.reviews({
     appId: appId,
     sort: gplay.sort.NEWEST,
-    num: 10
+    num: 100
   });
   const reviews :any= res.data;
   for(const review of reviews){
-    console.log(`Processsing review id ${review.id}`)
-    // const reviewProcessed = await redisClient.get(review.id);
-    // if(reviewProcessed!==true){
-      // await redisClient.set(review.id,true);
+    console.log("Processing review ",review)
       const date = new Date();
       const ticketName = `Ticket created from Playstore review ${review.id}`;
       const ticketBody = `${review.text}`;
-      const response = await devrevSDK.worksCreate({
-        title: ticketName,
-        body: ticketBody,
-        // The ticket will be created in the PROD-1 part. Rename this to match your part.
-        applies_to_part: 'PROD-1',
-        // The ticket will be owned by the DEVU-1 team. Rename this to match the required user.
-        owned_by: ['DEVU-1'],
-        type: publicSDK.WorkType.Ticket,
-        // tags:[{id:"play_store_tag"}]
-      });
-      console.log('Ticket created from playstore');
+      console.log("calling clustering api for play store review")
+      const clusteringServiceOptions = {
+        method: 'POST',
+        url: 'https://devrevhacklimbo.onrender.com/reviews',
+        headers: {
+          'content-type': 'application/json',
+        },
+        data: [
+          {
+            "review": ticketBody,
+            "id": review.id,
+            "source": "playstore"
+          }
+      ]
+      };
+      const apiResponse = await axios.request(clusteringServiceOptions);
+      console.log("received res for playstore review")
+      const clusteringData = apiResponse.data;
+      if(clusteringData[0].type==="Issue"){
+        const response = await devrevSDK.worksCreate({
+          title: ticketName,
+          body: ticketBody,
+          applies_to_part: 'PROD-1',
+          owned_by: ['DEVU-1'],
+          type: publicSDK.WorkType.Issue,
+          tags:[{id:clusteringData[0].tagId}]
+
+        });
+        console.log('Issue Ticket created from play store');
+      }
+      else if(clusteringData.type==="Feature"){
+        //figure out if ticket needs to be created
+        const response = await devrevSDK.worksCreate({
+          title: ticketName,
+          body: ticketBody,
+          applies_to_part: 'PROD-1',
+          owned_by: ['DEVU-1'],
+          type: publicSDK.WorkType.Ticket,
+          tags:[{id:clusteringData.tagId}]
+
+        });
+        console.log('Feature  created from twitter');
+      }
+
     }
-  //   else{
-  //     console.log(`Already processed ${review.id}`)
-  //   }
-  // }
+
 }
 catch(e){
   console.log(e);
@@ -71,12 +98,14 @@ const getTweets = async(event:any)=>{
       'X-RapidAPI-Host': 'twitter154.p.rapidapi.com'
     },
     data: {
-      hashtag: '#blinkit',
-      limit: 5,
+      hashtag: '#blinkit,#zomato,#letsBLinkIt',
+      limit: 20,
       section: 'top',
       language: 'en'
     }
   };
+
+ 
   
   try {
     const endpoint = event.execution_metadata.devrev_endpoint;
@@ -88,32 +117,54 @@ const getTweets = async(event:any)=>{
     const results = response.data.results;
     for(const result of results){
       console.log("Processing tweet id "+ result.tweet_id)
-      //check if exists
-      // const tweetProcessed = await redisClient.get(result.tweet_id);
-      // if(tweetProcessed!==true){
-        // await redisClient.set(result.tweet_id,true);
+
         if(result.language==="en"){
           const ticketName = `Ticket created from Tweet id ${result.tweet_id}`;
           const ticketBody = `${result.text}`;
+          const clusteringServiceOptions = {
+            method: 'POST',
+            url: 'https://devrevhacklimbo.onrender.com/reviews',
+            headers: {
+              'content-type': 'application/json',
+            },
+            data: [
+              {
+                "review": ticketBody,
+                "id": result.tweet_id,
+                "source": "twitter"
+              }
+          ]
+          };
+          const apiResponse = await axios.request(clusteringServiceOptions);
+          const clusteringData = apiResponse.data;
+          console.log("received res for tweet from clustering service ",clusteringData)
+          if(clusteringData[0].type==="Issue"){
+            const response = await devrevSDK.worksCreate({
+              title: ticketName,
+              body: ticketBody,
+              applies_to_part: 'PROD-1',
+              owned_by: ['DEVU-1'],
+              type: publicSDK.WorkType.Issue,
+              tags:[{id:clusteringData[0].tagId}]
+  
+            });
+            console.log('Issue Ticket created from twitter');
+          }
+          else if(clusteringData.type==="Feature"){
           //figure out if ticket needs to be created
           const response = await devrevSDK.worksCreate({
             title: ticketName,
             body: ticketBody,
-            // The ticket will be created in the PROD-1 part. Rename this to match your part.
             applies_to_part: 'PROD-1',
-            // The ticket will be owned by the DEVU-1 team. Rename this to match the required user.
             owned_by: ['DEVU-1'],
             type: publicSDK.WorkType.Ticket,
-            tags:[{id:"twitter_tag",value:"twitter"}]
+            tags:[{id:clusteringData.tagId}]
 
           });
-          console.log('Ticket created from twitter');
+          console.log('Feature  created from twitter');
+        }
         }
       }
-      // else{
-      //   console.log(`Already processed ${result.tweet_id}`)
-      // }
-      // }
     }
    catch (error) {
     console.error(error);
@@ -123,17 +174,9 @@ const getTweets = async(event:any)=>{
 
 export const run = async (events: any[]) => {
   for (const event of events) {
-    // if(redisClient===null){
-    //    redisClient = createClient({
-    //     password: 'x8rWrY7WuyyQHhPnDAEm4ZajTQvPNE9',
-    //     socket: {
-    //         host: 'redis-15229.c281.us-east-1-2.ec2.cloud.redislabs.com',
-    //         port: 15229
-    //     }
-    // })
     const appId='com.grofers.customerapp'
-    // getTweets(event)
-    await getPlayStoreReviews(event,appId)
+     await getTweets(event)
+     await getPlayStoreReviews(event,appId)
   }
 
 }
