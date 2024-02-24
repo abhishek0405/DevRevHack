@@ -8,6 +8,7 @@ import pyarrow as pa
 import json
 from collections import Counter
 
+#lance db uri
 uri = "data/sample-lancedb"
 db = lancedb.connect(uri)
 
