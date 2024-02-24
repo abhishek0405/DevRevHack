@@ -1,87 +1,128 @@
 [
     {
-        "cluster": "Payment Redirection",
-        "id": "abc123",
-        "review": "I am unable to get to the payment gateway page, it just keeps redirecting me to the checkout cart. It is frustrating because I have tried multiple stuff to get it resolved but it doesn't get resolved!!",
-        "sentiment": "Negative",
-        "review_type": "Issue",
-        "source": "playstore"
-    },
-    {
-        "cluster": "Payment Redirection",
-        "id": "abc1234",
-        "review": "I am unable to get to the payment gateway page, it just keeps redirecting me to the checkout cart. It is frustrating because I have tried multiple stuff to get it resolved but it doesn't get resolved!!",
-        "sentiment": "Negative",
-        "review_type": "Issue",
-        "source": "playstore"
-    },
-    {
-        "cluster": "Delivery",
-        "id": "abc12345",
-        "review": "The delivery time is never as shown, takes too long to deliver. Please fix this",
-        "sentiment": "Negative",
-        "review_type": "Issue",
-        "source": "playstore"
-    },
-    {
-        "cluster": "Delivery",
-        "id": "abc123456",
-        "review": "My order was given to given to wrong house multiple times",
-        "sentiment": "Negative",
-        "review_type": "Issue",
-        "source": "playstore"
-    },
-    {
-        "cluster": "Communication",
-        "id": "abc1234567",
-        "review": "Unable to contact delivery person and customer support not helping at all! nEVER ABLE TO get in touch with agents ",
-        "sentiment": "Negative",
-        "review_type": "Issue",
-        "source": "playstore"
-    },
-    {
-        "id": "324210",
-        "review": "Happy with the service provided, delivery has always been on time",
-        "sentiment": "Positive",
-        "review_type": "None",
-        "source": "playstore"
-    },
-    {
-        "cluster": "Convenience",
-        "id": "a1",
+        "cluster": "Functionality",
+        "id": "a",
         "review": "I like the service provided but would have loved if there was a functionality to directly call the delivery partner",
         "sentiment": "Positive",
         "review_type": "Feature",
         "source": "playstore"
     },
     {
-        "cluster": "Food Quality",
-        "id": "a189",
-        "review": "Food received from restaurant was stale, very bad ,zomato needs to cut off bad restaurant ",
+        "cluster": "Quality",
+        "id": "abcd",
+        "review": "Food received from restaurant was stale, very bad ,zomato needs to cut off bad restaurant",
         "sentiment": "Negative",
         "review_type": "Issue",
         "source": "playstore"
     },
     {
-        "cluster": "Delivery issue",
-        "id": "a1890",
-        "review": "I am a pure vegetarian but got non veg delivered!!!! this is unacceptable ",
+        "cluster": "Quality",
+        "id": "abcde",
+        "review": "I am a pure vegetarian but got non veg delivered!!!! this is unacceptable",
         "sentiment": "Negative",
         "review_type": "Issue",
         "source": "playstore"
     },
     {
-        "cluster": "UI speed",
-        "id": "a18901",
+        "cluster": "Performance",
+        "id": "abcdec",
         "review": "the app takes too long to load, please fix asap",
         "sentiment": "Negative",
         "review_type": "Issue",
         "source": "playstore"
     },
     {
-        "cluster": "App Loading",
-        "id": "a189010",
+        "cluster": "Performance",
+        "id": "abcdece",
         "review": "i have downloaded the app but it is not opening up keeps on showing me the loader icon",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Quality",
+        "id": "abcdeced",
+        "review": "food taste was very very bad",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Sharing",
+        "id": "abcdeced1",
+        "review": "good app but i want the ability to share my cart with my friend as well",
+        "sentiment": "Neutral",
+        "review_type": "Feature",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Payments",
+        "id": "abcdeced2",
+        "review": "payments are always stuck in the app",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Payments",
+        "id": "abcdeced3",
+        "review": "i have been trying to order from this restaurant but I'm not able to pay via UPI",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Convenience",
+        "id": "abcdeced4",
+        "review": "I absolutely love how easy it is to transfer money on the go and order from any restaurant",
+        "sentiment": "Positive",
+        "review_type": "Feature",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "abcdeced6",
+        "review": "the app has too many bugs , the order page never refreshes on its own",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "abcdeced61",
+        "review": "the app has too many bugs , the order page never refreshes on its own",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "abcdeced612223",
+        "review": "very buggy app, pls fix",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "abcdeced6122233",
+        "review": "very buggy app, pls fix",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "a32424",
+        "review": "very unstable app since the past week",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "a324245",
+        "review": "the app doesnt seem to startup",
         "sentiment": "Negative",
         "review_type": "Issue",
         "source": "playstore"

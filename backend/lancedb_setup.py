@@ -1,6 +1,5 @@
 import lancedb
 import pyarrow as pa
-
 uri = "data/sample-lancedb"
 db = lancedb.connect(uri)
 schema = pa.schema(
