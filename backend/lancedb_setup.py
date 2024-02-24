@@ -7,7 +7,8 @@ db = lancedb.connect(uri)
 schema = pa.schema(
   [
       pa.field("vector", pa.list_(pa.float32(), 3072)),
-      pa.field("review", pa.string())
+      pa.field("review", pa.string()),
+      pa.field("id",pa.string())
   ])
 tbl = db.create_table("reviews_table", schema=schema)
 
