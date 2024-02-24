@@ -126,5 +126,21 @@
         "sentiment": "Negative",
         "review_type": "Issue",
         "source": "playstore"
+    },
+    {
+        "cluster": "Performance",
+        "id": "a3242451",
+        "review": "homepage is loading forever",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
+    },
+    {
+        "cluster": "Delivery",
+        "id": "a32424511",
+        "review": "my products havent been delivered yet",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
     }
 ]
