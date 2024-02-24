@@ -142,5 +142,13 @@
         "sentiment": "Negative",
         "review_type": "Issue",
         "source": "playstore"
+    },
+    {
+        "cluster": "Delivery",
+        "id": "a32424511223",
+        "review": "product not received since the past 15 days",
+        "sentiment": "Negative",
+        "review_type": "Issue",
+        "source": "playstore"
     }
 ]
