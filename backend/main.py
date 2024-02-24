@@ -10,11 +10,14 @@ import json
 uri = "data/sample-lancedb"
 db = lancedb.connect(uri)
 
-
+class Review(BaseModel):
+    id: str
+    review: str
+    source: str
 
 app = FastAPI()
 client = OpenAI(api_key="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")
-tbl = db.open_table("my_table")
+tbl = db.open_table("reviews_table")
 
 
 def read_json(filename):
@@ -36,6 +39,32 @@ def append_to_json(data, filename):
     print("Data appended successfully.")
 
 def get_cluster(prompt):
+    messages = [
+        {"role": "system", "content": "I need you to do topic modelling for me. Given a review, you need to come up with a name of the cluster the review might belong to. Example, review: the payments gateway crashed right when I proceeded to checkout. Your cluster name could probably be 'Payments issues'. Just give the cluster name as the response."}
+    ]
+    messages.append({"role": "user", "content": prompt})
+    completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages= messages
+    )
+
+    print(completion.choices[0].message.content)
+    return completion.choices[0].message.content
+
+def get_sentiment(prompt):
+    messages = [
+        {"role": "system", "content": "I need you to"}
+    ]
+    messages.append({"role": "user", "content": prompt})
+    completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages= messages
+    )
+
+    print(completion.choices[0].message.content)
+    return completion.choices[0].message.content
+
+def get_type(prompt):
     messages = [
         {"role": "system", "content": "I need you to do topic modelling for me. Given a review, you need to come up with a name of the cluster the review might belong to. Example, review: the payments gateway crashed right when I proceeded to checkout. Your cluster name could probably be 'Payments issues'. Just give the cluster name as the response."}
     ]
