@@ -271,7 +271,9 @@ async def process_reviews(reviews_list: List[Review]):
 
             response['id'] = dataOb['id']
             response['source'] = dataOb['source']
-            response['tagId'] = fetchTagFromClusterName(dataOb['cluster'])
+            response['tagId'] = ""
+            if review_type != 'None':
+                response['tagId'] = fetchTagFromClusterName(dataOb['cluster'])
             response['type'] = dataOb['review_type']
             print("sending out response", response)
             response_list.append(response)
