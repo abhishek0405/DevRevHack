@@ -124,6 +124,44 @@ def get_type(prompt):
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
+def get_title(prompt):
+    messages = [
+        {"role": "system", "content": "I need you to return an appropriate title to a review that I would give you. The title should be short, crisp and should be relevant to the review body. It should highlight in brief what the review is about. Example: I have a recurring issue with payments, I can't go to the payments page after checkout, it just crashes all the time!. Your response might be 'Payment page crash'.Just return the title in your response - not more than 5 words."}
+    ]
+    messages.append({"role": "user", "content": prompt})
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+
+    print(completion.choices[0].message.content)
+    return completion.choices[0].message.content
+
+
+def get_answer(query):
+
+    query_embedding = get_embeddings(query)
+    closest_vectors = query_results(query_embedding)
+    prompt = "Question: " + query + ". Data: "
+
+    for i in range(len(closest_vectors)):
+        print(closest_vectors[i]['review'])
+        prompt += closest_vectors[i]['review']
+
+
+    messages = [
+        {"role": "system", "content": """I need you to answer a question based on the data that I will provide. You just need to frame an answer with the data provided to you. The answer should be crisp and relevant to the question asked. Example: Question: What are the top issues or complaints that the users reported? Data: I'm impressed by the customer service of this app. Had an issue with an order, and they resolved it promptly and courteously. Great job in prioritizing customer satisfaction!, The app frequently freezes and crashes, especially when browsing through categories or adding items to the cart. Makes the shopping experience frustrating and time-consuming., The app's interface is cluttered and confusing. It's hard to find items quickly, and sometimes the search function doesn't work properly. Definitely needs a redesign., Extremely disappointed with the delivery service. I've had multiple instances where my groceries arrived late, and some items were missing. Needs improvement., Disappointed with the freshness of the produce received. Some items were already nearing expiration, which is unacceptable. Need to work on sourcing fresher products. Your answer should be along the lines of Users reported dissatisfaction with:
+Delivery service: Late deliveries and missing items.
+App performance: Frequent freezes and crashes, especially during browsing.
+Interface usability: Cluttered and confusing interface, unreliable search function.
+Product quality: Received produce nearing expiration... you could make the summary more crisp - like bullet points. Keep in mind that you need to summarize it, not just list out the problems as they are."""}
+    ]
+    messages.append({"role": "user", "content": prompt})
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+    return completion.choices[0].message.content
 
 def get_embeddings(s):
     response = client.embeddings.create(
@@ -198,6 +236,12 @@ async def index():
     return {"message": "Hello World"}
 
 
+@app.get("/insights")
+async def insights(query: str):
+    response = get_answer(query)
+    return {"response": response}
+
+
 @app.post("/reviews/")
 async def process_reviews(reviews_list: List[Review]):
     threshold = 0.5
@@ -212,6 +256,9 @@ async def process_reviews(reviews_list: List[Review]):
         if not check_if_processed(reviewOb.id, data):
             dataOb = {}
             response = {}
+            # get title of the review
+            title = get_title(reviewOb.review)
+
             # get the sentiment of the review
             sentiment = get_sentiment(reviewOb.review)
 
@@ -262,6 +309,7 @@ async def process_reviews(reviews_list: List[Review]):
             dataOb['sentiment'] = sentiment
             dataOb['review_type'] = review_type
             dataOb['source'] = reviewOb.source
+            dataOb['title'] = title
 
             data.append(dataOb)
             if review_type != 'None':
