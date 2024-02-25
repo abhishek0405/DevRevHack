@@ -124,6 +124,19 @@ def get_type(prompt):
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
+def get_title(prompt):
+    messages = [
+        {"role": "system", "content": "I need you to return an appropriate title to a review that I would give you. The title should be short, crisp and should be relevant to the review body. It should highlight in brief what the review is about. Example: I have a recurring issue with payments, I can't go to the payments page after checkout, it just crashes all the time!. Your response might be 'Payment page crash'.Just return the title in your response - not more than 5 words."}
+    ]
+    messages.append({"role": "user", "content": prompt})
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+
+    print(completion.choices[0].message.content)
+    return completion.choices[0].message.content
+
 
 def get_answer(query):
 
@@ -228,6 +241,7 @@ async def insights(query: str):
     response = get_answer(query)
     return {"response": response}
 
+
 @app.post("/reviews/")
 async def process_reviews(reviews_list: List[Review]):
     threshold = 0.5
@@ -242,6 +256,9 @@ async def process_reviews(reviews_list: List[Review]):
         if not check_if_processed(reviewOb.id, data):
             dataOb = {}
             response = {}
+            # get title of the review
+            title = get_title(reviewOb.review)
+
             # get the sentiment of the review
             sentiment = get_sentiment(reviewOb.review)
 
@@ -292,6 +309,7 @@ async def process_reviews(reviews_list: List[Review]):
             dataOb['sentiment'] = sentiment
             dataOb['review_type'] = review_type
             dataOb['source'] = reviewOb.source
+            dataOb['title'] = title
 
             data.append(dataOb)
             if review_type != 'None':
