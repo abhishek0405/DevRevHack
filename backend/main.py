@@ -264,12 +264,10 @@ async def process_reviews(reviews_list: List[Review]):
 
             # get the type: feature/issue/none
             review_type = get_type(reviewOb.review)
+            embedding = get_embeddings(reviewOb.review)
 
             # if type is a feature or an issue: go to next step
             if review_type in ['Feature', 'Issue']:
-
-                # get embedding of the review
-                embedding = get_embeddings(reviewOb.review)
 
                 # get top 5 closest neighbours of the review from the db
                 closest_vectors = query_results(embedding)
