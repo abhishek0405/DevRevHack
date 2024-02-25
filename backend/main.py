@@ -10,6 +10,9 @@ from collections import Counter
 import requests
 from dotenv import load_dotenv
 import os
+from fastapi.middleware.cors import CORSMiddleware
+
+
 # lance db uri
 uri = "data/sample-lancedb"
 db = lancedb.connect(uri)
@@ -30,6 +33,15 @@ class ServerResponse(BaseModel):
 
 app = FastAPI()
 load_dotenv()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Accessing environment variables
 devrev_token = os.getenv("DEVREV_TOKEN")
