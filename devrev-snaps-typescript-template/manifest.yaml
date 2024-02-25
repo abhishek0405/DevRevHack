@@ -25,6 +25,8 @@ event_sources:
 functions:
   - name: ticket_creator
     description: Function to create a new ticket when triggered.
+  - name: bot_query
+    description: Function to chat with bot
 
 automations:
   - name: periodic_ticket_creator
@@ -33,3 +35,14 @@ automations:
     event_types:
       - timer.tick
     function: ticket_creator
+
+commands:
+  - name: ask
+    namespace: devrev
+    description: Bot to derive insights from existing tickets
+    surfaces:
+      - surface: discussions
+        object_types:
+          - snap_in
+    usage_hint: "/ask [what are the most reported issues ]"
+    function: bot_query
