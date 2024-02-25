@@ -27,8 +27,8 @@ const getPlayStoreReviews = async(event:any,appId:any)=>{
   const devrevSDK = client.setup({ endpoint, token });
   const res:any = await gplay.reviews({
     appId: appId,
-    sort: gplay.sort.NEWEST,
-    num: 100
+    sort: gplay.sort.HELPFULNESS,
+    num: 200
   });
   const reviews :any= res.data;
   for(const review of reviews){
