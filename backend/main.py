@@ -242,6 +242,12 @@ async def insights(query: str):
     return {"response": response}
 
 
+@app.get("/data")
+async def get_data():
+    data = read_json(filename)
+    return {"data": data}
+
+
 @app.post("/reviews/")
 async def process_reviews(reviews_list: List[Review]):
     threshold = 0.5
