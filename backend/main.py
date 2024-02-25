@@ -321,12 +321,12 @@ async def process_reviews(reviews_list: List[Review]):
             dataOb['source'] = reviewOb.source
             dataOb['title'] = title
 
-            data.append(dataOb)
             if review_type != 'None':
                 add_new_vector(embedding, reviewOb.review, reviewOb.id)
             else:
                 add_new_vector(embedding, reviewOb.review, reviewOb.id)
                 dataOb['cluster'] = "Miscellaneous"
+            data.append(dataOb)
 
             response['id'] = dataOb['id']
             response['source'] = dataOb['source']
