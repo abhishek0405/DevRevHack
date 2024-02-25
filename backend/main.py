@@ -61,7 +61,7 @@ def write_json(data, filename):
 
 def append_to_json(data, filename):
     write_json(data, filename)
-    print("Data appended successfully.")
+    print("Data appended to DB successfully.")
 
 
 def get_cluster(prompt):
@@ -79,7 +79,6 @@ def get_cluster(prompt):
         messages=messages
     )
 
-    print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
 
@@ -93,7 +92,6 @@ def confirm_cluster(prompt):
         messages=messages
     )
 
-    print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
 
@@ -107,7 +105,6 @@ def get_sentiment(prompt):
         messages=messages
     )
 
-    print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
 
@@ -121,8 +118,8 @@ def get_type(prompt):
         messages=messages
     )
 
-    print(completion.choices[0].message.content)
     return completion.choices[0].message.content
+
 
 def get_title(prompt):
     messages = [
@@ -134,7 +131,6 @@ def get_title(prompt):
         messages=messages
     )
 
-    print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
 
@@ -145,9 +141,7 @@ def get_answer(query):
     prompt = "Question: " + query + ". Data: "
 
     for i in range(len(closest_vectors)):
-        print(closest_vectors[i]['review'])
         prompt += closest_vectors[i]['review']
-
 
     messages = [
         {"role": "system", "content": """I need you to answer a question based on the data that I will provide. You just need to frame an answer with the data provided to you. The answer should be crisp and relevant to the question asked. Example: Question: What are the top issues or complaints that the users reported? Data: I'm impressed by the customer service of this app. Had an issue with an order, and they resolved it promptly and courteously. Great job in prioritizing customer satisfaction!, The app frequently freezes and crashes, especially when browsing through categories or adding items to the cart. Makes the shopping experience frustrating and time-consuming., The app's interface is cluttered and confusing. It's hard to find items quickly, and sometimes the search function doesn't work properly. Definitely needs a redesign., Extremely disappointed with the delivery service. I've had multiple instances where my groceries arrived late, and some items were missing. Needs improvement., Disappointed with the freshness of the produce received. Some items were already nearing expiration, which is unacceptable. Need to work on sourcing fresher products. Your answer should be along the lines of Users reported dissatisfaction with:
@@ -162,6 +156,7 @@ Product quality: Received produce nearing expiration... you could make the summa
         messages=messages
     )
     return completion.choices[0].message.content
+
 
 def get_embeddings(s):
     response = client.embeddings.create(
@@ -255,7 +250,6 @@ async def process_reviews(reviews_list: List[Review]):
 
     # get all current datapoints: read json once
     data = read_json(filename)
-    print("data is", data)
     for reviewOb in reviews_list:
 
         # check if review is not processed already
@@ -321,6 +315,7 @@ async def process_reviews(reviews_list: List[Review]):
             if review_type != 'None':
                 add_new_vector(embedding, reviewOb.review, reviewOb.id)
             else:
+                add_new_vector(embedding, reviewOb.review, reviewOb.id)
                 dataOb['cluster'] = "Miscellaneous"
 
             response['id'] = dataOb['id']
@@ -329,6 +324,7 @@ async def process_reviews(reviews_list: List[Review]):
             if review_type != 'None':
                 response['tagId'] = fetchTagFromClusterName(dataOb['cluster'])
             response['type'] = dataOb['review_type']
+            response['title'] = dataOb['title']
             print("sending out response", response)
             response_list.append(response)
 
